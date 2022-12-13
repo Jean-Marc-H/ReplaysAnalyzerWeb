@@ -225,6 +225,7 @@ function PokemonView()
     }
     statsHtml+="</table>";
     document.getElementsByClassName("stats")[0].innerHTML=statsHtml;
+    document.getElementsByClassName("options")[0].innerHTML="";
 }
 
 function UpdateView()
