@@ -1,0 +1,182 @@
+body
+{
+    font-family: "Helvetica";
+    background-color: #282828;
+    width:100%
+}
+
+.main
+{
+	background-color: #888888;
+	margin: auto;
+	margin-bottom: 50px;
+	padding-bottom: 50px;
+	padding-top: 50px;
+	width: 1000px;
+}
+
+.team
+{
+    background-color: #d8d8d8;
+    margin: auto;
+	margin-bottom: 5px;
+	margin-top: 5px;
+    border-radius: 10px;
+    width: 480px;
+}
+
+.teamMember{
+    height: 64px;
+    padding: 6px;
+    width: 64px;
+}
+
+.teamMember:hover{
+    background-color: white;
+    background-size: 24px 24px;
+}
+
+.teamStat
+{
+    width: 10%;
+}
+
+.leadStat
+{
+    text-align: center;
+    border: 2px solid black;
+    border-collapse: separate;
+}
+
+.leadMembers
+{
+    align: center;
+    text-align: center;
+    height: 80px;
+}
+
+.first-lead
+{
+    margin-left: 20%;
+}
+
+.second-lead
+{
+    margin-right: 20%;
+}
+
+.options
+{
+    margin-left: auto;
+    width: 66%;
+}
+
+.option
+{
+    display: inline-block;
+    width: 80px;
+    /*background-color: aqua;*/
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.option:hover
+{
+    background-color: white;
+}
+
+.option.selected
+{
+    display: inline-block;
+    width: 80px;
+    background-color: #d8d8d8;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.pokemon-overview
+{
+    margin-left: 0%;
+}
+
+.replay-icon
+{
+    height: 48px;
+    width: 48px;
+}
+
+.brought
+{
+    background-color:green;
+}
+
+.opponent
+{
+    border: 2px solid black;
+    border-collapse: separate;
+}
+
+.terad
+{
+    background-image: url("https://www.serebii.net/itemdex/sprites/teraorb.png");
+    background-size: 24px 24px;
+    background-position: right top;
+    background-repeat: no-repeat;
+}
+
+table
+{
+    width: 80%;
+    background-color: #484848;
+    border: 1px black;
+    border-spacing: 4px;
+    border-collapse: collapse;
+    margin-left: 10%;
+    border-radius: 8px;
+}
+
+th
+{
+    background-color: #282828;
+    
+    color: #c8c8c8;
+    border: none;
+}
+
+td
+{
+    background-color: #d8d8d8;
+    border-spacing: 0px;
+    text-align: center;
+}
+
+tr
+{
+    border: 2px solid black;
+    border-spacing: 2px;
+}
+
+.pokemon
+{
+    border: 2px solid black;
+}
+
+.back-button
+{
+    margin-left: 10%;
+}
+
+.button
+{
+    display: inline-block;
+    width: 80px;
+    background-color: #d8d8d8;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
