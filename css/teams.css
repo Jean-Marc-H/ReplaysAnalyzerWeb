@@ -25,6 +25,21 @@ body
     width: 480px;
 }
 
+.team-option
+{
+    background-color: #d8d8d8;
+    margin: auto;
+	margin-bottom: 5px;
+	margin-top: 5px;
+    border-radius: 10px;
+    width: 480px;
+}
+
+.team-option:hover
+{
+    background-color: white;
+}
+
 .teamMember{
     height: 64px;
     padding: 6px;
