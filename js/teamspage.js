@@ -1,9 +1,9 @@
 function GetPokemonIcons(team)
 {
     var html="";
-    for(var i=0;i<team.pokemon.length;i++)
+    for(var i=0;i<team.length;i++)
     {
-        html+="<img class='teamMember' src='"+GetIconUrl(team.pokemon[i].name)+"'>";
+        html+="<img class='teamMember' src='"+GetIconUrl(team[i])+"'>";
     }
     return html;
 }
