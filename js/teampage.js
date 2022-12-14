@@ -1,6 +1,74 @@
 var mode="Overview";
 var monIndex=0;
 var checkingPokemon=false;
+var replayFilters={
+    //0=doesn't matter
+    //1=yes
+    //2=no
+    terad:0,
+    won:0,
+    led:0
+}
+var tempReplays=[];
+
+function GetTempWins()
+{
+    var wins=0;
+    for(var i=0;i<tempReplays.length;i++)
+    {
+        if(tempReplays[i].won)
+        {
+            wins++;
+        }
+    }
+    return wins;
+}
+
+function GetTempLead(monIndex)
+{
+    var leads=0;
+    for(var i=0;i<tempReplays.length;i++)
+    {
+        if(WasYourLead(tempReplays[i], monIndex))
+        {
+            leads++;
+        }
+    }
+    return leads;
+}
+
+function GetTempTeras(monIndex)
+{
+    var teras=0;
+    for(var i=0;i<tempReplays.length;i++)
+    {
+        if(tempReplays[i].teraId==monIndex)
+        {
+            teras++;
+        }
+    }
+    return teras;
+}
+
+function GetTempMoveUses(move)
+{
+    var uses=0;
+    if(move==null)
+    {
+        return uses;
+    }
+    for(var i=0;i<tempReplays.length;i++)
+    {
+        for(var j=0;j<tempReplays[i].teams[tempReplays[i].wantedPlayerId].pokemon[monIndex].moves.length;j++)
+        {
+            if(move.name===tempReplays[i].teams[tempReplays[i].wantedPlayerId].pokemon[monIndex].moves[j].name)
+            {
+                uses+=tempReplays[i].teams[tempReplays[i].wantedPlayerId].pokemon[monIndex].moves[j].timesUsed;
+            }
+        }
+    }
+    return uses;
+}
 
 function GetPokemonIcons()
 {
@@ -116,7 +184,10 @@ function GetReplayData()
     html+=GetReplayTableHeader();
     for(var i=0;i<team.replays.length;i++)
     {
-        html+=GetReplay(team.replays[i]);
+        if(PassesFilter(team.replays[i], 0))
+        {
+            html+=GetReplay(team.replays[i]);
+        }
     }
     html+="</table>";
     return html;
@@ -127,6 +198,11 @@ function GetOptions()
     var html='<span class="option'+((mode==="Overview")?" selected":"")+'" onclick="ChangeOption(\'Overview\')">Overview</span>';
     html+='<span class="option'+((mode==="Leads")?" selected":"")+'" onclick="ChangeOption(\'Leads\')">Leads</span>';
     html+='<span class="option'+((mode==="Replays")?" selected":"")+'" onclick="ChangeOption(\'Replays\')">Replays</span>';
+    if(mode=="Replays")
+    {
+        html+="<br/>";
+        html+="<span class='filter' value="+replayFilters.won+" onclick='UpdateFilter(\"won\")'>Won</span>";
+    }
     return html;
 }
 
@@ -158,6 +234,7 @@ function EnablePokemonView(index)
 {
     monIndex=index;
     checkingPokemon=true;
+    ResetFilters();
     UpdateView();
 }
 
@@ -170,28 +247,107 @@ function ChangeOption(value)
 function BackButton()
 {
     checkingPokemon=false;
+    ResetFilters();
     UpdateView();
 }
 
-function AddButtons()
+function PassesFilter(replay, pokemonIndex)
 {
+    switch(replayFilters.terad)
+    {
+        case 0:
+            break;
+        case 1:
+            if(replay.teraId!=pokemonIndex)
+            {
+                return false;
+            }
+            break;
+        case 2:
+            if(replay.teraId==pokemonIndex)
+            {
+                return false;
+            }
+            break;
+        default:
+            break;
+    }
+    switch(replayFilters.won)
+    {
+        case 0:
+            break;
+        case 1:
+            if(!replay.won)
+            {
+                return false;
+            }
+            break;
+        case 2:
+            if(replay.won)
+            {
+                return false;
+            }
+            break;
+        default:
+            break;
+    }
+    switch(replayFilters.led)
+    {
+        case 0:
+            break;
+        case 1:
+            if(!WasYourLead(replay, pokemonIndex))
+            {
+                return false;
+            }
+            break;
+        case 2:
+            if(WasYourLead(replay, pokemonIndex))
+            {
+                return false;
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
 }
 
 function PokemonView()
 {
+    var optionsHtml="";
+    optionsHtml+="<span class='filter' value="+replayFilters.terad+" onclick='UpdateFilter(\"tera\")'>Tera'd</span>";
+    optionsHtml+="<span class='filter' value="+replayFilters.won+" onclick='UpdateFilter(\"won\")'>Won</span>";
+    optionsHtml+="<span class='filter' value="+replayFilters.led+" onclick='UpdateFilter(\"led\")'>Led</span>";
+    document.getElementsByClassName("options")[0].innerHTML=optionsHtml;
+
+    var statsHtml="<table>";
+    statsHtml+=GetReplayTableHeader();
+    tempReplays=[];
+    for(var i=0;i<team.replays.length;i++)
+    {
+        if((CheckIfBrought(team.replays[i].wantedPlayerId, team.replays[i], monIndex)!="")&&PassesFilter(team.replays[i], monIndex))
+        {
+            statsHtml+=GetReplay(team.replays[i]);
+            tempReplays[tempReplays.length]=team.replays[i];
+        }
+    }
+    statsHtml+="</table>";
+    document.getElementsByClassName("stats")[0].innerHTML=statsHtml;
+
     var html="<div class='button back-button' onclick='BackButton()'>back</div><table><tr><td class=\"pokemon\" rowspan=\"7\"><img src='"+GetSpriteUrl(team.pokemon[monIndex].name)+"'></td><th>Times Brought</th><th>% brought</th><th>Times Won</th><th>% won</th></tr>";
     html+="<tr>";
-    html+="<td>"+team.pokemon[monIndex].gamesbrought+"</td>";
-    html+="<td>"+calculatePercentage(team.pokemon[monIndex].gamesbrought, team.replays.length)+"</td>";
-    html+="<td>"+team.pokemon[monIndex].timesWon+"</td>";
-    html+="<td>"+calculatePercentage(team.pokemon[monIndex].timesWon, team.pokemon[monIndex].gamesbrought)+"</td>";
+    html+="<td>"+tempReplays.length+"</td>";
+    html+="<td>"+calculatePercentage(tempReplays.length, team.replays.length)+"</td>";
+    html+="<td>"+GetTempWins()+"</td>";
+    html+="<td>"+calculatePercentage(GetTempWins(), tempReplays.length)+"</td>";
     html+="</tr>";
     html+="<tr><th>Times Led</th><th>% Led</th><th>Times Tera'd</th><th>% Tera'd</th></tr>";
     html+="<tr>";
-    html+="<td>"+getTimesLed(monIndex)+"</td>";
-    html+="<td>"+calculatePercentage(getTimesLed(monIndex), team.pokemon[monIndex].gamesbrought)+"</td>";
-    html+="<td>"+team.pokemon[monIndex].timesTerad+"</td>";
-    html+="<td>"+calculatePercentage(team.pokemon[monIndex].timesTerad, team.pokemon[monIndex].gamesbrought)+"</td>";
+    html+="<td>"+GetTempLead(monIndex)+"</td>";
+    html+="<td>"+calculatePercentage(GetTempLead(monIndex), tempReplays.length)+"</td>";
+    html+="<td>"+GetTempTeras(monIndex)+"</td>";
+    html+="<td>"+calculatePercentage(GetTempTeras(monIndex), tempReplays.length)+"</td>";
     html+="</tr>";
     html+="<tr>";
     for(var i=0;i<4;i++)
@@ -202,30 +358,41 @@ function PokemonView()
     html+="<tr>";
     for(var i=0;i<4;i++)
     {
-        html+="<td>Used "+GetMoveUses(team.pokemon[monIndex], i)+" time(s)</td>";
+        html+="<td>Used "+GetTempMoveUses(team.pokemon[monIndex].moves[i])+" time(s)</td>";
     }
     html+="</tr>";
     html+="<tr>";
     for(var i=0;i<4;i++)
     {
-        html+="<td>"+roundTwoDigits(GetMoveUses(team.pokemon[monIndex], i)/team.pokemon[monIndex].gamesbrought)+"/game avg</td>";
+        html+="<td>"+roundTwoDigits(GetTempMoveUses(team.pokemon[monIndex].moves[i])/tempReplays.length)+"/game avg</td>";
     }
     html+="</tr>";
     html+="</table>";
     document.getElementsByClassName("pokemon-div")[0].innerHTML=html;
+}
 
-    var statsHtml="<table>";
-    statsHtml+=GetReplayTableHeader();
-    for(var i=0;i<team.replays.length;i++)
+function ResetFilters()
+{
+    replayFilters.terad=0;
+    replayFilters.won=0;
+    replayFilters.led=0;
+}
+
+function UpdateFilter(value)
+{
+    if(value=="tera")
     {
-        if(CheckIfBrought(team.replays[i].wantedPlayerId, team.replays[i], monIndex)!="")
-        {
-            statsHtml+=GetReplay(team.replays[i]);
-        }
+        replayFilters.terad=(replayFilters.terad+1)%3;
     }
-    statsHtml+="</table>";
-    document.getElementsByClassName("stats")[0].innerHTML=statsHtml;
-    document.getElementsByClassName("options")[0].innerHTML="";
+    else if(value=="won")
+    {
+        replayFilters.won=(replayFilters.won+1)%3;
+    }
+    else if(value=="led")
+    {
+        replayFilters.led=(replayFilters.led+1)%3;
+    }
+    UpdateView();
 }
 
 function UpdateView()
@@ -238,7 +405,6 @@ function UpdateView()
     {
         TeamView();
     }
-    AddButtons();
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {

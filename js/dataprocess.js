@@ -100,3 +100,9 @@ function GetMoveUses(pokemon, index)
 {
     return (pokemon.moves[index]==null) ? 0 : pokemon.moves[index].timesUsed;
 }
+
+function WasYourLead(replay, monIndex)
+{
+    var brought=(replay.wantedPlayerId==0)?replay.player1brought:replay.player2brought;
+    return (brought[0]==monIndex||brought[1]==monIndex);
+}
