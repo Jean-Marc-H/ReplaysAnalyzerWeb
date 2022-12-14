@@ -49,7 +49,7 @@ function CheckIfBrought(id, replay, j)
         {
             if(replay.player1brought[k]==j)
             {
-                return " brought";
+                return (k<2)? " led":" brought";
             }
         }
     }
@@ -59,7 +59,7 @@ function CheckIfBrought(id, replay, j)
         {
             if(replay.player2brought[k]==j)
             {
-                return " brought";
+                return (k<2)? " led":" brought";
             }
         }
     }
